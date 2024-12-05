@@ -1,15 +1,20 @@
 package com.northcoders.record_shop.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public class Genres {
     @Id
+    @GeneratedValue
+    @Column(updatable = false, nullable = false)
     Long id;
 
     @Column
@@ -18,30 +23,4 @@ public class Genres {
     @ManyToMany(mappedBy = "albumGenres")
     Set<Album> associatedAlbums;
 
-    public Genres() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Genre getGenres() {
-        return genres;
-    }
-
-    public Set<Album> getAssociatedAlbums() {
-        return associatedAlbums;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setGenres(Genre genres) {
-        this.genres = genres;
-    }
-
-    public void setAssociatedAlbums(Set<Album> associatedAlbums) {
-        this.associatedAlbums = associatedAlbums;
-    }
 }
