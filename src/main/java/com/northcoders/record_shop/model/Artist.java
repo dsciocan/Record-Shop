@@ -9,7 +9,6 @@ import java.util.Set;
 
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
 @Data
 public class Artist {
 
@@ -18,10 +17,14 @@ public class Artist {
     @Column(updatable = false, nullable = false)
     Long id;
 
-    @Column
+    @Column (unique = true, nullable = false)
     String name;
 
     @ManyToMany(mappedBy = "albumArtists")
     Set<Album> albums;
+
+    public Artist(String name) {
+        this.name = name;
+    }
 
 }

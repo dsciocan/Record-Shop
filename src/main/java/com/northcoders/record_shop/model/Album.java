@@ -1,6 +1,8 @@
 package com.northcoders.record_shop.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,13 +25,15 @@ public class Album {
     @Column(updatable = false, nullable = false)
     Long id;
 
-    @Column
+    @Column(nullable = false)
     String name;
 
-    @Column(name="year_of_release")
+    @Column(name="year_of_release", nullable = false)
+    @Min(value = 0) @Max(value = 2024)
     Integer releaseYear;
 
-    @Column
+    @Column(nullable = false)
+    @Min(value = 0)
     Integer stock;
 
 //    Many-to-many relationships
@@ -47,5 +51,6 @@ public class Album {
             joinColumns = @JoinColumn(name = "artist_id"),
             inverseJoinColumns = @JoinColumn(name = "album_id"))
     Set<Artist> albumArtists;
+
 
 }
