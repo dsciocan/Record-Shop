@@ -138,6 +138,5 @@ public class ShopControllerTests {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.stock").value(50))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
                 .andExpect(status().isOk());
-
     }
 }

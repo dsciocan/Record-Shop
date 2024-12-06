@@ -129,21 +129,24 @@ public class ShopServiceTests {
         Set<Artist> artists = new HashSet<>(List.of(new Artist("Artist1")));
         Album album = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtists(artists).build();
         Album newAlbum = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(50).genreSet(genreList).albumArtists(artists).build();
-        Mockito.when(shopRepository.findById(album.getId())).thenReturn(Optional.ofNullable(newAlbum));
+        Mockito.when(shopRepository.save(album)).thenReturn(newAlbum);
+        Mockito.when(shopRepository.existsById(1L)).thenReturn(true);
+        Mockito.when(shopRepository.findById(1L)).thenReturn(Optional.of(album));
 
         assertEquals(newAlbum, shopServiceImplementation.updateAlbum(1L, newAlbum));
     }
 
     @Test
     @DisplayName("updateAlbum throws the appropriate error when no album can be found at specified id")
-    void testUpdateAlbum() throws Exception {
+    void testUpdateAlbumInvalidId() throws Exception {
         Set<Genre> genreList = new HashSet<>();
         genreList.add(Genre.Dance);
         genreList.add(Genre.Pop);
         Set<Artist> artists = new HashSet<>(List.of(new Artist("Artist1")));
         Album album = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtists(artists).build();
         Album newAlbum = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(50).genreSet(genreList).albumArtists(artists).build();
-        Mockito.when(shopRepository.findById(album.getId())).thenReturn(Optional.ofNullable(newAlbum));
+        Mockito.when(shopRepository.findById(album.getId())).thenReturn(Optional.of(album));
+        Mockito.when(shopRepository.existsById(2L)).thenReturn(false);
 
         assertThrows(ItemNotFoundException.class, () -> shopServiceImplementation.updateAlbum(2L, newAlbum));
     }
