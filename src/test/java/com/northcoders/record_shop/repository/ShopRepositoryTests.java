@@ -7,6 +7,8 @@ import org.mockito.internal.util.collections.Iterables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
@@ -22,5 +24,8 @@ public class ShopRepositoryTests {
         shopRepository.save(sampleAlbum);
 
         assertEquals(shopRepository.findAll().spliterator().getExactSizeIfKnown(), 1);
+        assertEquals(shopRepository.findById(1L).get(), sampleAlbum);
     }
+
+
 }

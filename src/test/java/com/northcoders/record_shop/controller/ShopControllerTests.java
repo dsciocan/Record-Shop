@@ -61,8 +61,43 @@ public class ShopControllerTests {
 
         this.mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/v1/album/"))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.length").value(1))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1L))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("GET album by id, valid id")
+    public void testGetAlbumById() throws Exception {
+        Album album1 = Album.builder().id(1L).name("No Longer Hooman").releaseYear(2024).stock(100).build();
+        Album album2 = Album.builder().id(2L).name("Purrfection").releaseYear(2022).stock(50).build();
+        List<Album> albumList = new ArrayList<>();
+        albumList.add(album1);
+        albumList.add(album2);
+        albumList.forEach(album -> Mockito.when(shopServiceImplementation.getAlbumById(album.getId())).thenReturn(album));
+
+
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/album/1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1L))
+                .andExpect(status().isOk());
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/album/2"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(2L))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("GET album by id, valid id")
+    public void testGetAlbumByIdUnhappy() throws Exception {
+        Album album1 = Album.builder().id(1L).name("No Longer Hooman").releaseYear(2024).stock(100).build();
+        Album album2 = Album.builder().id(2L).name("Purrfection").releaseYear(2022).stock(50).build();
+        List<Album> albumList = new ArrayList<>();
+        albumList.add(album1);
+        albumList.add(album2);
+        albumList.forEach(album -> Mockito.when(shopServiceImplementation.getAlbumById(album.getId())).thenReturn(album));
+
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/album/3"))
+                .andExpect(status().isNotFound());
+
     }
 }
