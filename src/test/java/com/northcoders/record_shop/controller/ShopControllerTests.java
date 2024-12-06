@@ -3,10 +3,9 @@ package com.northcoders.record_shop.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.northcoders.record_shop.model.Album;
+import com.northcoders.record_shop.model.Artist;
 import com.northcoders.record_shop.model.Genre;
-import com.northcoders.record_shop.model.Genres;
 import com.northcoders.record_shop.service.ShopServiceImplementation;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,9 +15,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -26,6 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -88,7 +87,7 @@ public class ShopControllerTests {
     }
 
     @Test
-    @DisplayName("GET album by id, valid id")
+    @DisplayName("GET album by id, invalid id")
     public void testGetAlbumByIdUnhappy() throws Exception {
         Album album1 = Album.builder().id(1L).name("No Longer Hooman").releaseYear(2024).stock(100).build();
         Album album2 = Album.builder().id(2L).name("Purrfection").releaseYear(2022).stock(50).build();
@@ -100,6 +99,40 @@ public class ShopControllerTests {
         this.mockMvc.perform(
                         MockMvcRequestBuilders.get("/api/v1/album/3"))
                 .andExpect(status().isNotFound());
+
+    }
+
+    @Test
+    @DisplayName("POST album , valid entry")
+    public void testPostAlbum() throws Exception {
+        Set<Genre> genreList = new HashSet<>();
+        genreList.add(Genre.Dance);
+        genreList.add(Genre.Pop);
+        Set<Artist> artists = new HashSet<>(List.of(new Artist("Artist1")));
+        Album album = new Album(1L, "Sample", 2021, 100, genreList, artists);
+        String json = mapper.writeValueAsString(album);
+
+       Mockito.when(shopServiceImplementation.addAlbum(album)).thenReturn(album);
+
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/v1/album").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isCreated());
+
+    }
+
+    @Test
+    @DisplayName("POST album , incomplete entry")
+    public void testPostAlbum() throws Exception {
+        Set<Genre> genreList = new HashSet<>();
+        Set<Artist> artists = new HashSet<>(List.of(new Artist("Artist1")));
+        Album album = new Album(1L, "Sample", null, 100, genreList, artists);
+        String json = mapper.writeValueAsString(album);
+
+        Mockito.when(shopServiceImplementation.addAlbum(album)).thenReturn(album);
+
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/v1/album").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isNotAcceptable());
 
     }
 }

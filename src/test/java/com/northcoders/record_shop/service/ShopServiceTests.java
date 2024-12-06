@@ -2,6 +2,8 @@ package com.northcoders.record_shop.service;
 
 
 import com.northcoders.record_shop.model.Album;
+import com.northcoders.record_shop.model.Artist;
+import com.northcoders.record_shop.model.Genre;
 import com.northcoders.record_shop.repository.ShopRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,11 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -73,4 +72,39 @@ public class ShopServiceTests {
 
          assertNull(expected);
     }
+
+
+    @Test
+    @DisplayName("addAlbum returns the saved album")
+    void testAddAlbum() {
+        Set<Genre> genreList = new HashSet<>();
+        genreList.add(Genre.Dance);
+        genreList.add(Genre.Pop);
+        Set<Artist> artists = new HashSet<>(List.of(new Artist("Artist1")));
+        Album album = Album.builder().name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtists(artists).build();
+        Album mockAlbum = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtists(artists).build();
+
+        Mockito.when(shopRepository.save(album)).thenReturn(mockAlbum);
+        Album result = shopServiceImplementation.addAlbum(album);
+        assertAll(() -> {
+            assertEquals(mockAlbum, result);
+            assertEquals(1L, result.getId());
+                }
+        );
+    }
+
+    @Test
+    @DisplayName("addAlbum throws an error when an album with an existing id is added")
+    void testAddAlbum() {
+        Set<Genre> genreList = new HashSet<>();
+        genreList.add(Genre.Dance);
+        genreList.add(Genre.Pop);
+        Set<Artist> artists = new HashSet<>(List.of(new Artist("Artist1")));
+        Album album = Album.builder().name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtists(artists).build();
+        Mockito.when(shopRepository.existsById(album.getId())).thenReturn(true);
+
+        assertThrows(Exception.class, shopServiceImplementation.addAlbum(album));
+
+    }
+
 }
