@@ -60,7 +60,7 @@ public class ShopControllerTests {
         Mockito.when(shopServiceImplementation.getAllAlbums()).thenReturn(albumList);
 
         this.mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/v1/album/"))
+                MockMvcRequestBuilders.get("/api/v1/album"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1L))
                 .andExpect(status().isOk());
     }
@@ -73,15 +73,17 @@ public class ShopControllerTests {
         List<Album> albumList = new ArrayList<>();
         albumList.add(album1);
         albumList.add(album2);
-        albumList.forEach(album -> Mockito.when(shopServiceImplementation.getAlbumById(album.getId())).thenReturn(album));
+        for (Album album : albumList) {
+            Mockito.when(shopServiceImplementation.getAlbumById(album.getId())).thenReturn(album);
+        };
 
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders.get("/api/v1/album/1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
                 .andExpect(status().isOk());
         this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/album/2"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(2L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(2L))
                 .andExpect(status().isOk());
     }
 

@@ -19,4 +19,8 @@ public class ShopServiceImplementation implements ShopService{
         shopRepository.findAll().forEach(albumList::add);
         return albumList;
     }
+    @Override
+    public Album getAlbumById(Long id) {
+        return shopRepository.findById(id).orElse(null);
+    }
 }

@@ -5,5 +5,6 @@ import com.northcoders.record_shop.model.Album;
 import java.util.List;
 
 public interface ShopService {
-    public List<Album> getAllAlbums();
+    List<Album> getAllAlbums();
+    Album getAlbumById(Long id);
 }
