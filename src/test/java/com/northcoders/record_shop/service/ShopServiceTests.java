@@ -1,6 +1,8 @@
 package com.northcoders.record_shop.service;
 
 
+import com.northcoders.record_shop.exception.InvalidItemException;
+import com.northcoders.record_shop.exception.ItemNotFoundException;
 import com.northcoders.record_shop.model.Album;
 import com.northcoders.record_shop.model.Artist;
 import com.northcoders.record_shop.model.Genre;
@@ -59,7 +61,7 @@ public class ShopServiceTests {
     }
 
     @Test
-    @DisplayName("getAlbumById responds with the appropriate album")
+    @DisplayName("getAlbumById throws the right exception when album is not found")
     void testGetAlbumByIdNotFound() {
         Album album1 = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).build();
         Album album2 = Album.builder().id(2L).name("Purrfection").releaseYear(2022).stock(50).build();
@@ -68,15 +70,13 @@ public class ShopServiceTests {
             Mockito.when(shopRepository.findById(album.getId())).thenReturn(Optional.of(album));
         }
 
-        Album expected = shopServiceImplementation.getAlbumById(3L);
-
-         assertNull(expected);
+         assertThrows(ItemNotFoundException.class, () -> shopServiceImplementation.getAlbumById(3L));
     }
 
 
     @Test
     @DisplayName("addAlbum returns the saved album")
-    void testAddAlbum() {
+    void testAddAlbum() throws Exception {
         Set<Genre> genreList = new HashSet<>();
         genreList.add(Genre.Dance);
         genreList.add(Genre.Pop);
@@ -95,16 +95,26 @@ public class ShopServiceTests {
 
     @Test
     @DisplayName("addAlbum throws an error when an album with an existing id is added")
-    void testAddAlbum() {
+    void testAddAlbumExistingId() throws Exception {
         Set<Genre> genreList = new HashSet<>();
         genreList.add(Genre.Dance);
         genreList.add(Genre.Pop);
         Set<Artist> artists = new HashSet<>(List.of(new Artist("Artist1")));
-        Album album = Album.builder().name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtists(artists).build();
+        Album album = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtists(artists).build();
         Mockito.when(shopRepository.existsById(album.getId())).thenReturn(true);
 
-        assertThrows(Exception.class, shopServiceImplementation.addAlbum(album));
-
+        assertThrows(InvalidItemException.class, ()-> shopServiceImplementation.addAlbum(album));
     }
+    @Test
+    @DisplayName("addAlbum throws an error when an album with insufficient/null data is added")
+    void testAddAlbumInvalidEntry() throws Exception {
+        Set<Genre> genreList = new HashSet<>();
+        Set<Artist> artists = new HashSet<>(List.of(new Artist("Artist1")));
+        Album album = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).genreSet(genreList).albumArtists(artists).build();
+        Mockito.when(shopRepository.existsById(album.getId())).thenReturn(false);
+
+        assertThrows(InvalidItemException.class, ()-> shopServiceImplementation.addAlbum(album));
+    }
+
 
 }

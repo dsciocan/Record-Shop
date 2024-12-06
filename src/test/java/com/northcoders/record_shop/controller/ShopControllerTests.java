@@ -119,20 +119,4 @@ public class ShopControllerTests {
                 .andExpect(status().isCreated());
 
     }
-
-    @Test
-    @DisplayName("POST album , incomplete entry")
-    public void testPostAlbum() throws Exception {
-        Set<Genre> genreList = new HashSet<>();
-        Set<Artist> artists = new HashSet<>(List.of(new Artist("Artist1")));
-        Album album = new Album(1L, "Sample", null, 100, genreList, artists);
-        String json = mapper.writeValueAsString(album);
-
-        Mockito.when(shopServiceImplementation.addAlbum(album)).thenReturn(album);
-
-        this.mockMvc.perform(
-                        MockMvcRequestBuilders.post("/api/v1/album").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(status().isNotAcceptable());
-
-    }
 }
