@@ -37,13 +37,12 @@ public class Album {
     Integer stock;
 
 //    Many-to-many relationships
-    @ManyToMany
-    @JoinTable(
-            name = "album_genres",
-            joinColumns = @JoinColumn(name = "genre_id"),
-            inverseJoinColumns = @JoinColumn(name = "album_id"))
-    Set<Genres> albumGenres;
 
+    @ElementCollection(targetClass = Genre.class)
+    @CollectionTable(name = "album_genres", joinColumns = @JoinColumn(name = "album_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "genres")
+    Set <Genre> genreSet;
 
     @ManyToMany
     @JoinTable(
