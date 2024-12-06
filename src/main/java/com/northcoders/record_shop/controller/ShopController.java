@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,11 +26,12 @@ public class ShopController {
     @GetMapping("/{albumId}")
     public ResponseEntity<Album> getAlbumById(@PathVariable Long albumId) {
         Album result = shopService.getAlbumById(albumId);
-        if(result == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        } else {
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping
+    public ResponseEntity<Album> postAlbum(@RequestBody Album album) throws Exception {
+        return new ResponseEntity<>(shopService.addAlbum(album), HttpStatus.CREATED);
     }
 }
 
