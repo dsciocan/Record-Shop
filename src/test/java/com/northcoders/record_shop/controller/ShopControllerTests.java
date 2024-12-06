@@ -119,4 +119,25 @@ public class ShopControllerTests {
                 .andExpect(status().isCreated());
 
     }
+
+    @Test
+    @DisplayName("PUT album, valid entry")
+    public void testPutAlbum() throws Exception {
+        Set<Genre> genreList = new HashSet<>();
+        genreList.add(Genre.Dance);
+        genreList.add(Genre.Pop);
+        Set<Artist> artists = new HashSet<>(List.of(new Artist("Artist1")));
+        Album album = new Album(1L, "Sample", 2021, 100, genreList, artists);
+        Album newAlbum = new Album(1L, "Sample", 2021, 50, genreList, artists);
+        String json = mapper.writeValueAsString(newAlbum);
+
+        Mockito.when(shopServiceImplementation.updateAlbum(1L, newAlbum)).thenReturn(newAlbum);
+
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.put("/api/v1/album/1").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.stock").value(50))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
+                .andExpect(status().isOk());
+
+    }
 }
