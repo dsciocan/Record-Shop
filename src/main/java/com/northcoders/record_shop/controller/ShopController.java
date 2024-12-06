@@ -24,7 +24,7 @@ public class ShopController {
     }
 
     @GetMapping("/{albumId}")
-    public ResponseEntity<Album> getAlbumById(@PathVariable Long albumId) {
+    public ResponseEntity<Album> getAlbumById(@PathVariable Long albumId) throws Exception {
         Album result = shopService.getAlbumById(albumId);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -32,6 +32,11 @@ public class ShopController {
     @PostMapping
     public ResponseEntity<Album> postAlbum(@RequestBody Album album) throws Exception {
         return new ResponseEntity<>(shopService.addAlbum(album), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{albumId}")
+    public ResponseEntity<Album> putAlbum(@PathVariable Long albumId, @RequestBody Album newAlbum) throws Exception {
+        return new ResponseEntity<>(shopService.updateAlbum(albumId, newAlbum), HttpStatus.OK);
     }
 }
 

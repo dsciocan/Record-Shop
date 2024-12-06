@@ -22,11 +22,11 @@ public class ShopServiceImplementation implements ShopService{
         return albumList;
     }
     @Override
-    public Album getAlbumById(Long id) {
+    public Album getAlbumById(Long id){
         if(shopRepository.existsById(id)) {
             return shopRepository.findById(id).orElse(null);
         } else {
-            throw new ItemNotFoundException(String.format("Could not find item with an id of %s", id));
+            throw new ItemNotFoundException(String.format("Could not find album with an id of %s", id));
         }
     }
 
@@ -37,6 +37,21 @@ public class ShopServiceImplementation implements ShopService{
         } else if (album.getName().isEmpty() || album.getReleaseYear() == null || album.getStock() == null || album.getAlbumArtists().isEmpty() || album.getGenreSet().isEmpty()) {
             throw new InvalidItemException("Incomplete album entry, please specify all values.");
         } else {
+            return shopRepository.save(album);
+        }
+    }
+
+    @Override
+    public Album updateAlbum(Long id, Album newAlbum) {
+        if(!shopRepository.existsById(id)) {
+            throw new ItemNotFoundException(String.format("Could not find album with an id of %s", id));
+        } else {
+            Album album = shopRepository.findById(id).orElse(null);
+            album.setName(newAlbum.getName());
+            album.setReleaseYear(newAlbum.getReleaseYear());
+            album.setStock(newAlbum.getStock());
+            album.setGenreSet(newAlbum.getGenreSet());
+            album.setAlbumArtists(newAlbum.getAlbumArtists());
             return shopRepository.save(album);
         }
     }
