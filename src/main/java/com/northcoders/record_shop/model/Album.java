@@ -7,8 +7,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 
+import java.io.Serial;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -21,20 +27,21 @@ public class Album {
     //Fields and columns
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    @Serial
     @Column(updatable = false, nullable = false)
-    Long id;
+    private Long id;
 
     @Column(nullable = false)
-    String name;
+    private String name;
 
     @Column(name="year_of_release", nullable = false)
     @Min(value = 0) @Max(value = 2024)
-    Integer releaseYear;
+    private Integer releaseYear;
 
     @Column(nullable = false)
     @Min(value = 0)
-    Integer stock;
+    private Integer stock;
 
 //    Many-to-many relationships
 
@@ -42,14 +49,16 @@ public class Album {
     @CollectionTable(name = "album_genres", joinColumns = @JoinColumn(name = "album_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "genres")
-    Set <Genre> genreSet;
+    private Set <Genre> genreSet = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "album_artists",
-            joinColumns = @JoinColumn(name = "artist_id"),
-            inverseJoinColumns = @JoinColumn(name = "album_id"))
-    Set<Artist> albumArtists;
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Cascade({CascadeType.ALL})
+    @JoinColumn(name = "artist")
+    private Artist albumArtist;
 
 
+    public void addGenre(Genre genre) {
+        genreSet.add(genre);
+    }
 }
