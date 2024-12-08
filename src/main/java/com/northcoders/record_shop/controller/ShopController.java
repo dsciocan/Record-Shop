@@ -31,6 +31,8 @@ public class ShopController {
 
     @PostMapping
     public ResponseEntity<Album> postAlbum(@RequestBody Album album) throws Exception {
+//        Album fullAlbum = Album.builder().name(album.getName()).releaseYear(album.getReleaseYear()).stock(album.getStock()).genreSet(album.getGenreSet()).albumArtist(album.getAlbumArtist()).build();
+//        fullAlbum.getAlbumArtists().forEach(artist -> shopService.saveArtist(artist.getName()));
         return new ResponseEntity<>(shopService.addAlbum(album), HttpStatus.CREATED);
     }
 
