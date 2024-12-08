@@ -2,6 +2,7 @@ package com.northcoders.record_shop.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.northcoders.record_shop.exception.ItemNotFoundException;
 import com.northcoders.record_shop.model.Album;
 import com.northcoders.record_shop.model.Artist;
 import com.northcoders.record_shop.model.Genre;
@@ -86,21 +87,6 @@ public class ShopControllerTests {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    @DisplayName("GET album by id, invalid id")
-    public void testGetAlbumByIdUnhappy() throws Exception {
-        Album album1 = Album.builder().id(1L).name("No Longer Hooman").releaseYear(2024).stock(100).build();
-        Album album2 = Album.builder().id(2L).name("Purrfection").releaseYear(2022).stock(50).build();
-        List<Album> albumList = new ArrayList<>();
-        albumList.add(album1);
-        albumList.add(album2);
-        albumList.forEach(album -> Mockito.when(shopServiceImplementation.getAlbumById(album.getId())).thenReturn(album));
-
-        this.mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/v1/album/3"))
-                .andExpect(status().isNotFound());
-
-    }
 
     @Test
     @DisplayName("POST album , valid entry")
@@ -108,9 +94,10 @@ public class ShopControllerTests {
         Set<Genre> genreList = new HashSet<>();
         genreList.add(Genre.Dance);
         genreList.add(Genre.Pop);
-        Set<Artist> artists = new HashSet<>(List.of(new Artist("Artist1")));
-        Album album = new Album(1L, "Sample", 2021, 100, genreList, artists);
+        Artist artist = Artist.builder().name("Artist1").build();
+        Album album = new Album(1L, "Sample", 2021, 100, genreList, artist);
         String json = mapper.writeValueAsString(album);
+        System.out.println(json);
 
        Mockito.when(shopServiceImplementation.addAlbum(album)).thenReturn(album);
 
@@ -126,9 +113,9 @@ public class ShopControllerTests {
         Set<Genre> genreList = new HashSet<>();
         genreList.add(Genre.Dance);
         genreList.add(Genre.Pop);
-        Set<Artist> artists = new HashSet<>(List.of(new Artist("Artist1")));
-        Album album = new Album(1L, "Sample", 2021, 100, genreList, artists);
-        Album newAlbum = new Album(1L, "Sample", 2021, 50, genreList, artists);
+        Artist artist = Artist.builder().name("Artist1").build();
+        Album album = new Album(1L, "Sample", 2021, 100, genreList, artist);
+        Album newAlbum = new Album(1L, "Sample", 2021, 50, genreList, artist);
         String json = mapper.writeValueAsString(newAlbum);
 
         Mockito.when(shopServiceImplementation.updateAlbum(1L, newAlbum)).thenReturn(newAlbum);

@@ -24,6 +24,9 @@ public class ShopServiceTests {
     @Mock
     ShopRepository shopRepository;
 
+    @Mock
+    ArtistService artistService;
+
     @InjectMocks
     ShopServiceImplementation shopServiceImplementation;
 
@@ -52,6 +55,7 @@ public class ShopServiceTests {
         List<Album> albumList = new ArrayList<>(List.of(album1, album2));
         for(Album album : albumList) {
             Mockito.when(shopRepository.findById(album.getId())).thenReturn(Optional.of(album));
+            Mockito.when(shopRepository.existsById(album.getId())).thenReturn(true);
         }
         Album expected1 = shopServiceImplementation.getAlbumById(1L);
         Album expected2 = shopServiceImplementation.getAlbumById(2L);
@@ -83,11 +87,13 @@ public class ShopServiceTests {
         Set<Genre> genreList = new HashSet<>();
         genreList.add(Genre.Dance);
         genreList.add(Genre.Pop);
-        Set<Artist> artists = new HashSet<>(List.of(new Artist("Artist1")));
-        Album album = Album.builder().name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtists(artists).build();
-        Album mockAlbum = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtists(artists).build();
+        Artist artist = Artist.builder().name("Artist1").build();
+        Album album = Album.builder().name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtist(artist).build();
+        Album mockAlbum = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtist(artist).build();
 
         Mockito.when(shopRepository.save(album)).thenReturn(mockAlbum);
+        Mockito.when(artistService.getArtistByName(artist.getName())).thenReturn(artist);
+
         Album result = shopServiceImplementation.addAlbum(album);
         assertAll(() -> {
             assertEquals(mockAlbum, result);
@@ -102,19 +108,21 @@ public class ShopServiceTests {
         Set<Genre> genreList = new HashSet<>();
         genreList.add(Genre.Dance);
         genreList.add(Genre.Pop);
-        Set<Artist> artists = new HashSet<>(List.of(new Artist("Artist1")));
-        Album album = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtists(artists).build();
+        Artist artist = Artist.builder().name("Artist1").build();
+        Album album = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtist(artist).build();
         Mockito.when(shopRepository.existsById(album.getId())).thenReturn(true);
+        Mockito.when(artistService.getArtistByName(artist.getName())).thenReturn(artist);
 
         assertThrows(InvalidItemException.class, ()-> shopServiceImplementation.addAlbum(album));
     }
     @Test
-    @DisplayName("addAlbum throws an error when an album with insufficient/null data is added")
+    @DisplayName("addAlbum throws the appropriate exception when an album with insufficient/null data is added")
     void testAddAlbumInvalidEntry() throws Exception {
         Set<Genre> genreList = new HashSet<>();
-        Set<Artist> artists = new HashSet<>(List.of(new Artist("Artist1")));
-        Album album = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).genreSet(genreList).albumArtists(artists).build();
+        Artist artist = Artist.builder().name("Artist1").build();
+        Album album = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).genreSet(genreList).albumArtist(artist).build();
         Mockito.when(shopRepository.existsById(album.getId())).thenReturn(false);
+        Mockito.when(artistService.getArtistByName(artist.getName())).thenReturn(artist);
 
         assertThrows(InvalidItemException.class, ()-> shopServiceImplementation.addAlbum(album));
     }
@@ -126,12 +134,13 @@ public class ShopServiceTests {
         Set<Genre> genreList = new HashSet<>();
         genreList.add(Genre.Dance);
         genreList.add(Genre.Pop);
-        Set<Artist> artists = new HashSet<>(List.of(new Artist("Artist1")));
-        Album album = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtists(artists).build();
-        Album newAlbum = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(50).genreSet(genreList).albumArtists(artists).build();
+        Artist artist = Artist.builder().name("Artist1").build();
+        Album album = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtist(artist).build();
+        Album newAlbum = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(50).genreSet(genreList).albumArtist(artist).build();
         Mockito.when(shopRepository.save(album)).thenReturn(newAlbum);
         Mockito.when(shopRepository.existsById(1L)).thenReturn(true);
         Mockito.when(shopRepository.findById(1L)).thenReturn(Optional.of(album));
+        Mockito.when(artistService.getArtistByName(artist.getName())).thenReturn(artist);
 
         assertEquals(newAlbum, shopServiceImplementation.updateAlbum(1L, newAlbum));
     }
@@ -142,9 +151,10 @@ public class ShopServiceTests {
         Set<Genre> genreList = new HashSet<>();
         genreList.add(Genre.Dance);
         genreList.add(Genre.Pop);
-        Set<Artist> artists = new HashSet<>(List.of(new Artist("Artist1")));
-        Album album = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtists(artists).build();
-        Album newAlbum = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(50).genreSet(genreList).albumArtists(artists).build();
+        Artist artist = Artist.builder().name("Artist1").build();
+        Set<Artist> artists = new HashSet<>(List.of(artist));
+        Album album = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtist(artist).build();
+        Album newAlbum = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(50).genreSet(genreList).albumArtist(artist).build();
         Mockito.when(shopRepository.findById(album.getId())).thenReturn(Optional.of(album));
         Mockito.when(shopRepository.existsById(2L)).thenReturn(false);
 
