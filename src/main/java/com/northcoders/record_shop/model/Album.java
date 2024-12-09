@@ -27,7 +27,7 @@ public class Album {
     //Fields and columns
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Serial
     @Column(updatable = false, nullable = false)
     private Long id;
@@ -53,8 +53,8 @@ public class Album {
     private Set <Genre> genreSet = new HashSet<>();
 
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @Cascade({CascadeType.ALL})
+//    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Cascade({CascadeType.PERSIST})
     @JoinColumn(name = "artist")
     private Artist albumArtist;
 
