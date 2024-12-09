@@ -61,4 +61,13 @@ public class ShopServiceImplementation implements ShopService{
             return shopRepository.save(album);
         }
     }
+
+    @Override
+    public void deleteAlbum(Long id) {
+        if(shopRepository.existsById(id)) {
+            shopRepository.deleteById(id);
+        } else {
+            throw new ItemNotFoundException(String.format("Album at the id of %s does not exist or may have already been deleted", id));
+        }
+    }
 }

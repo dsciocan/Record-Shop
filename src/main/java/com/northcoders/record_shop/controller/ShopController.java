@@ -1,5 +1,6 @@
 package com.northcoders.record_shop.controller;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.northcoders.record_shop.model.Album;
 import com.northcoders.record_shop.repository.ShopRepository;
 import com.northcoders.record_shop.service.ShopService;
@@ -9,7 +10,9 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/album")
@@ -39,6 +42,12 @@ public class ShopController {
     @PutMapping("/{albumId}")
     public ResponseEntity<Album> putAlbum(@PathVariable Long albumId, @RequestBody Album newAlbum) throws Exception {
         return new ResponseEntity<>(shopService.updateAlbum(albumId, newAlbum), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{albumId}")
+    public ResponseEntity<String> deleteAlbum(@PathVariable Long albumId) throws Exception {
+        shopService.deleteAlbum(albumId);
+        return new ResponseEntity<>("Album deleted successfully", HttpStatus.OK);
     }
 }
 

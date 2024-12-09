@@ -10,4 +10,5 @@ public interface ShopService {
     Album getAlbumById(Long id);
     Album addAlbum(Album album) throws Exception;
     Album updateAlbum(Long id, Album newAlbum) throws Exception;
+    void deleteAlbum(Long id);
 }
