@@ -126,4 +126,21 @@ public class ShopControllerTests {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("DELETE album, valid entry")
+    public void testDeleteAlbum() throws Exception {
+        Set<Genre> genreList = new HashSet<>();
+        genreList.add(Genre.Dance);
+        genreList.add(Genre.Pop);
+        Artist artist = Artist.builder().name("Artist1").build();
+        Album album = new Album(1L, "Sample", 2021, 100, genreList, artist);
+        Album newAlbum = new Album(1L, "Sample", 2021, 50, genreList, artist);
+        String json = mapper.writeValueAsString(newAlbum);
+
+        Mockito.when(shopServiceImplementation.updateAlbum(1L, newAlbum)).thenReturn(newAlbum);
+
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.delete("/api/v1/album/1")).andExpect(status().isOk());
+    }
 }

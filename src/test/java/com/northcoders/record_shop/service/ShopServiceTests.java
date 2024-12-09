@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.times;
 
 @DataJpaTest
 public class ShopServiceTests {
@@ -152,7 +153,6 @@ public class ShopServiceTests {
         genreList.add(Genre.Dance);
         genreList.add(Genre.Pop);
         Artist artist = Artist.builder().name("Artist1").build();
-        Set<Artist> artists = new HashSet<>(List.of(artist));
         Album album = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtist(artist).build();
         Album newAlbum = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(50).genreSet(genreList).albumArtist(artist).build();
         Mockito.when(shopRepository.findById(album.getId())).thenReturn(Optional.of(album));
@@ -161,5 +161,34 @@ public class ShopServiceTests {
         assertThrows(ItemNotFoundException.class, () -> shopServiceImplementation.updateAlbum(2L, newAlbum));
     }
 
+    //DELETE ALBUM
+//    @Test
+//    @DisplayName("deleteAlbum deletes the correct entry when passed in a valid id")
+//    void testDeleteAlbum() throws Exception {
+//        Set<Genre> genreList = new HashSet<>();
+//        genreList.add(Genre.Dance);
+//        genreList.add(Genre.Pop);
+//        Artist artist = Artist.builder().name("Artist1").build();
+//        Album album = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtist(artist).build();
+//        shopRepository.save(album);
+//        Mockito.when(shopRepository.existsById(album.getId())).thenReturn(true);
+//
+//        shopServiceImplementation.deleteAlbum(album.getId());
+//    }
+
+    @Test
+    @DisplayName("deleteAlbum throws an appropriate exception when passed in an invalid id")
+    void testDeleteAlbumInvalidId() throws Exception {
+        Set<Genre> genreList = new HashSet<>();
+        genreList.add(Genre.Dance);
+        genreList.add(Genre.Pop);
+        Artist artist = Artist.builder().name("Artist1").build();
+        Album album = Album.builder().id(1L).name("Some Album Name").releaseYear(2024).stock(100).genreSet(genreList).albumArtist(artist).build();
+        Mockito.when(shopRepository.findById(album.getId())).thenReturn(Optional.of(album));
+        Mockito.when(shopRepository.existsById(2L)).thenReturn(false);
+
+
+        assertThrows(ItemNotFoundException.class, () -> shopServiceImplementation.deleteAlbum(2L));
+    }
 
 }
