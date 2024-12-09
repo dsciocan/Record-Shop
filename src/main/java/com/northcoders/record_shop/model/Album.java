@@ -47,6 +47,7 @@ public class Album {
 
     @ElementCollection(targetClass = Genre.class)
     @CollectionTable(name = "album_genres", joinColumns = @JoinColumn(name = "album_id"))
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @Enumerated(EnumType.STRING)
     @Column(name = "genres")
     private Set <Genre> genreSet = new HashSet<>();
