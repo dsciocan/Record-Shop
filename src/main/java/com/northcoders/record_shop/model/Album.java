@@ -13,7 +13,6 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 
-import java.io.Serial;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,8 +26,7 @@ public class Album {
     //Fields and columns
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Serial
+    @GeneratedValue(strategy=GenerationType.SEQUENCE)
     @Column(updatable = false, nullable = false)
     private Long id;
 
@@ -42,6 +40,9 @@ public class Album {
     @Column(nullable = false)
     @Min(value = 0)
     private Integer stock;
+
+    @Column
+    private String image;
 
 //    Many-to-many relationships
 
