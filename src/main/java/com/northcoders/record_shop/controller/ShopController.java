@@ -46,8 +46,7 @@ public class ShopController {
 
     @DeleteMapping("/{albumId}")
     public ResponseEntity<String> deleteAlbum(@PathVariable Long albumId) throws Exception {
-        shopService.deleteAlbum(albumId);
-        return new ResponseEntity<>("Album deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>(shopService.deleteAlbum(albumId), HttpStatus.OK);
     }
 }
 
